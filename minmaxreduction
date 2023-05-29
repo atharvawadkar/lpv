@@ -1,0 +1,89 @@
+#include <bits/stdc++.h>
+#include <omp.h>
+using namespace std;
+
+void min_reduction(vector<int>& arr)
+{
+    int min_value = INT_MAX;
+    #pragma omp parallel for reduction(min : min_value)
+    for(int i = 0; i < arr.size(); i++)
+    {
+        if(arr[i] < min_value)
+            min_value = arr[i];
+    }
+    cout << "Min value is : " << min_value << endl;
+}
+
+void max_reduction(vector<int>& arr)
+{
+    int max_value = INT_MIN;
+    #pragma omp parallel for reduction(max : max_value)
+    for(int i = 0; i < arr.size(); i++)
+    {
+        if(arr[i] > max_value)
+            max_value = arr[i];
+    }
+    cout << "Max value is : " << max_value << endl;
+}
+
+void sum_reduction(vector<int>& arr)
+{
+    int sum = 0;
+    #pragma omp parallel for reduction(+ : sum)
+    for(int i = 0; i < arr.size(); i++)
+    {
+        sum += arr[i];
+    }
+    cout << "Sum is : " << sum << endl;
+}
+
+void average_reduction(vector<int>& arr)
+{
+    int sum = 0;
+    #pragma omp parallel for reduction(+ : sum)
+    for(int i = 0; i < arr.size(); i++)
+    {
+        sum += arr[i];
+    }
+    cout << "Average value is : " << (1.0 * sum) / arr.size() << endl;
+}
+
+int main() {
+	// your code goes here
+	vector<int> arr = {5, 2, 9, 1, 7, 6, 8, 3, 4};
+    min_reduction(arr);
+    max_reduction(arr);
+    sum_reduction(arr);
+    average_reduction(arr);
+    return 0;
+}
+
+
+
+
+
+
+PROBLEM STATEMENT:
+Implement Parallel Reduction using Min, Max, Sum and Average operations. THEORY:
+CUDA is a parallel computing platform and programming model that graphics processing unit (GPU).Since
+its introduction in 2006, CUDA has been widely deployed through thousands of applications and published
+research papers, and supported by an installed base of hundreds of millions of CUDA enabled GPUs in
+notebooks, workstations, compute clusters and supercomputers. Applications used in astronomy, biology, chemistry, physics, data mining, manufacturing, finance, and other computationally intense fields are
+increasing using CUDA to deliver the benefits of GPU acceleration. CUDA C extends C by allowing the
+programmer to define C functions, called kernels, that, when called, are executed N times in parallel by N
+different CUDA threads, as opposed to only once like regular C functions. A kernel is defined using
+the__global__declaration specifier and the number of CUDA threads that execute that kernel for a given kernel
+call is specified using a new<<<...>>>execution configuration syntax. Each thread that executes the kernel is
+given a unique thread ID that is accessible within the kernel through the built in thread Idx variable. Parallel Reduction
+Reduce is a collective communication primitive used in the context of a parallel programming model to
+combine multiple vectors into one, using an associative binary operator. Every vector is present at a distinct
+processor in the beginning. The goal of the primitive is to apply the operator in the order given by the process
+or induces to the vectors until only one is left.
+Fig.1 Parallel Reduction Operation
+Algorithm/Pseudo code:
+1) Read the size of the vector N and read the numbers randomly
+2) Read the start time
+3) Using kernel <<< >>> function in CUDA transfer the data to device, parallelize your code for given size of
+vector. Properly define size of Grid, Block & thread to find the result. 4) Read the end time
+5) Display the execution time as 'end time – start time' 6) Apply it for various sizes of vector and compare the execution time with serial program. INPUT: List of integers. OUTPUT: Calculated values of Sum, Max, Min, Avg and standard deviation using CUDA. CONCLUSION: The concept of parallel reduction operation in parallel programming is studied &
+implemented for finding min, max, sum & average values of a vector using CUDA.
