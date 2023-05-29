@@ -1,0 +1,186 @@
+#include <bits/stdc++.h>
+#include <omp.h>
+using namespace std;
+
+void BFS(int n, vector<vector<int>>& adj)
+{
+    vector<int> visited(n, 0);
+    queue<int> q;
+    q.push(0);
+    visited[0] = 1;
+    while(!q.empty())
+    {
+        int queueSize = q.size();
+        #pragma omp parallel for //creates parallel threads
+        for(int i = 0; i < queueSize; i++)
+        {
+            #pragma omp critical
+            {
+                int u = q.front(); q.pop();
+                cout << u << " ";
+            
+                #pragma omp parallel for    
+                for(int v:adj[u])
+                {
+                    if(!visited[v])
+                    {
+                        visited[v] = 1;
+                        q.push(v);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void DFS(int n, vector<vector<int>>& adj)
+{
+    vector<int> visited(n, 0);
+    stack<int> s;
+    s.push(0);
+    visited[0] = 1;
+    while(!s.empty())
+    {
+        int u = s.top(); s.pop();
+        cout << u << " ";
+        #pragma omp parallel for
+        for(int v:adj[u])
+        {
+            if(!visited[v])
+            {
+                visited[v] = 1;
+                s.push(v);
+            }
+        }
+    }
+}
+
+int main() {
+	// your code goes here
+	int n, m;
+	cin >> n >> m;
+	vector<vector<int>> adj(n);
+	for(int i = 0; i < m; i++)
+	{
+	    int u, v;
+	    cin >> u >> v;
+	    adj[u].push_back(v);
+	    adj[v].push_back(u);
+	}
+	BFS(n, adj);
+// 	DFS(n, adj);
+	return 0;
+}
+
+
+
+
+Title of the Assignment: Design and implement Parallel Breadth First Search based on existing algorithms
+using OpenMP. Use a Tree or an undirected graph for BFS and DFS
+Objective of the Assignment: Students should be able to perform Parallel Breadth First Search and
+Depth First Search based on existing algorithms using OpenMP
+Theory:
+What is BFS?
+BFS stands for Breadth-First Search. It is a graph traversal algorithm used to explore all the nodes of a
+graph or tree systematically, starting from the root node or a specified starting point, and visiting all the
+neighboring nodes at the current depth level before moving on to the next depth level. The algorithm uses a queue data structure to keep track of the nodes that need to be visited, and marks
+each visited node to avoid processing it again. The basic idea of the BFS algorithm is to visit all the
+nodes at a given level before moving on to the next level, which ensures that all the nodes are visited in
+breadth-first order. BFS is commonly used in many applications, such as finding the shortest path between two nodes, solving puzzles, and searching through a tree or graph. Example of BFS
+Now let’s take a look at the steps involved in traversing a graph by using Breadth-First Search:
+Step 1: Take an Empty Queue. Step 2: Select a starting node (visiting a node) and insert it into the Queue. Step 3: Provided that the Queue is not empty, extract the node from the Queue and insert its child nodes
+(exploring a node) into the Queue. Step 4: Print the extracted node.
+Department of Computer Engineering Course : Laboratory Practice V
+2
+Department of Computer Engineering Course: Laboratory Practice V
+3
+Concept of OpenMP
+● OpenMP (Open Multi-Processing) is an application programming interface (API) that supports
+shared-memory parallel programming in C, C++, and Fortran. It is used to write parallel
+programs that can run on multicore processors, multiprocessor systems, and parallel computing
+clusters. ● OpenMP provides a set of directives and functions that can be inserted into the source code of a
+program to parallelize its execution. These directives are simple and easy to use, and they can be
+applied to loops, sections, functions, and other program constructs. The compiler then generates
+parallel code that can run on multiple processors concurrently. ● OpenMP programs are designed to take advantage of the shared-memory architecture of modern
+processors, where multiple processor cores can access the same memory. OpenMP uses a forkjoin model of parallel execution, where a master thread forks multiple worker threads to execute
+a parallel region of the code, and then waits for all threads to complete before continuing with the
+sequential part of the code. ● OpenMP is widely used in scientific computing, engineering, and other fields that require high- performance computing. It is supported by most modern compilers and is available on a wide
+range of platforms, including desktops, servers, and supercomputers. How Parallel BFS Work
+● Parallel BFS (Breadth-First Search) is an algorithm used to explore all the nodes of a graph or tree
+systematically in parallel. It is a popular parallel algorithm used for graph traversal in distributed
+computing, shared-memory systems, and parallel clusters. ● The parallel BFS algorithm starts by selecting a root node or a specified starting point, and then
+assigning it to a thread or processor in the system. Each thread maintains a local queue of nodes to
+be visited and marks each visited node to avoid processing it again. ● The algorithm then proceeds in levels, where each level represents a set of nodes that are at a certain
+distance from the root node. Each thread processes the nodes in its local queue at the current level, and then exchanges the nodes that are adjacent to the current level with other threads or processors. This is done to ensure that the nodes at the next level are visited by the next iteration of the
+algorithm. ● The parallel BFS algorithm uses two phases: the computation phase and the communication phase. In the computation phase, each thread processes the nodes in its local queue, while in the
+Department of Computer Engineering Course: Laboratory Practice V
+4
+communication phase, the threads exchange the nodes that are adjacent to the current level with
+other threads or processors. ● The parallel BFS algorithm terminates when all nodes have been visited or when a specified node
+has been found. The result of the algorithm is the set of visited nodes or the shortest path from the
+root node to the target node. ● Parallel BFS can be implemented using different parallel programming models, such as OpenMP, MPI, CUDA, and others. The performance of the algorithm depends on the number of threads or
+processors used, the size of the graph, and the communication overhead between the threads or
+processors. What is DFS?
+DFS stands for Depth-First Search. It is a popular graph traversal algorithm that explores as far as
+possible along each branch before backtracking. This algorithm can be used to find the shortest path
+between two vertices or to traverse a graph in a systematic way. The algorithm starts at the root node
+and explores as far as possible along each branch before backtracking. The backtracking is done to
+explore the next branch that has not been explored yet. DFS can be implemented using either a recursive or an iterative approach. The recursive approach is
+simpler to implement but can lead to a stack overflow error for very large graphs. The iterative
+approach uses a stack to keep track of nodes to be explored and is preferred for larger graphs. DFS can also be used to detect cycles in a graph. If a cycle exists in a graph, the DFS algorithm will
+eventually reach a node that has already been visited, indicating that a cycle exists. A standard DFS implementation puts each vertex of the graph into one of two categories:
+1. Visited
+2. Not Visited
+The purpose of the algorithm is to mark each vertex as visited while avoiding cycles. Example of DFS:
+To implement DFS traversal, you need to take the following stages. Step 1: Create a stack with the total number of vertices in the graph as the size. Step 2: Choose any vertex as the traversal's beginning point. Push a visit to that vertex and add it to
+Department of Computer Engineering Course: Laboratory Practice V
+5
+the stack. Step 3 - Push any non-visited adjacent vertices of a vertex at the top of the stack to the top of the
+stack. Step 4 - Repeat steps 3 and 4 until there are no more vertices to visit from the vertex at the top of the
+stack. Step 5 - If there are no new vertices to visit, go back and pop one from the stack using backtracking. Step 6 - Continue using steps 3, 4, and 5 until the stack is empty. Step 7 - When the stack is entirely unoccupied, create the final spanning tree by deleting the graph's
+unused edges. Consider the following graph as an example of how to use the dfs algorithm.
+Step 1: Mark vertex A as a visited source node by selecting it as a source node. ● You should push vertex A to the top of the stack.
+Department of Computer Engineering Course: Laboratory Practice V
+6
+Step 2: Any nearby unvisited vertex of vertex A, say B, should be visited. You should push vertex B to the top of the stack
+Step 3: From vertex C and D, visit any adjacent unvisited vertices of vertex B. Imagine you have
+chosen vertex C, and you want to make C a visited vertex. ● Vertex C is pushed to the top of the stack.
+Department of Computer Engineering Course: Laboratory Practice V
+7
+Step 4: You can visit any nearby unvisited vertices of vertex C, you need to select vertex D and
+designate it as a visited vertex. ● Vertex D is pushed to the top of the stack.
+Step 5: Vertex E is the lone unvisited adjacent vertex of vertex D, thus marking it as visited. ●Vertex E should be pushed to the top of the stack.
+Step 6: Vertex E's nearby vertices, namely vertex C and D have been visited, pop vertex E from
+the stack.
+Department of Computer Engineering Course: Laboratory Practice V
+8
+Step 7: Now that all of vertex D's nearby vertices, namely vertex B and C, have been visited, pop
+vertex D from the stack.
+Step 8: Similarly, vertex C's adjacent vertices have already been visited; therefore, pop it from
+the stack.
+Step 9: There is no more unvisited adjacent vertex of b, thus pop it from the stack.
+Department of Computer Engineering Course: Laboratory Practice V
+9
+Step 10: All of the nearby vertices of Vertex A, B, and C, have already been visited, so pop
+vertex A from the stack as well.
+Concept of OpenMP
+● OpenMP (Open Multi-Processing) is an application programming interface (API) that supports
+shared-memory parallel programming in C, C++, and Fortran. It is used to write parallel
+programs that can run on multicore processors, multiprocessor systems, and parallel computing
+clusters. ● OpenMP provides a set of directives and functions that can be inserted into the source code of a
+program to parallelize its execution. These directives are simple and easy to use, and they can be
+applied to loops, sections, functions, and other program constructs. The compiler then generates
+parallel code that can run on multiple processors concurrently. ● OpenMP programs are designed to take advantage of the shared-memory architecture of modern
+processors, where multiple processor cores can access the same memory. OpenMP uses a forkjoin model of parallel execution, where a master thread forks multiple worker threads to
+execute a parallel region of the code, and then waits for all threads to complete before continuingwith
+the sequential part of the code. How Parallel DFS Work
+● Parallel Depth-First Search (DFS) is an algorithm that explores the depth of a graph structure to
+search for nodes. In contrast to a serial DFS algorithm that explores nodes in a sequential manner, parallel DFS algorithms explore nodes in a parallel manner, providing a significant speedup in
+large graphs. ● Parallel DFS works by dividing the graph into smaller subgraphs that are exploredsimultaneously. Each processor or thread is assigned a subgraph to explore, and they work independently to
+explore the subgraph using the standard DFS algorithm. During the exploration process, the nodes
+are marked as visited to avoid revisiting them. ● To explore the subgraph, the processors maintain a stack data structure that stores the nodes in
+the order of exploration. The top node is picked and explored, and its adjacent nodes are pushed
+onto the stack for further exploration. The stack is updated concurrently by the processors as they
+explore their subgraphs. ● Parallel DFS can be implemented using several parallel programming models such as OpenMP, MPI, and CUDA. In OpenMP, the #pragma omp parallel for directive is used to distribute the
+work among multiple threads. By using this directive, each thread operates on a different part of
+the graph, which increases the performance of the DFS algorithm. Conclusion- In this way we can achieve parallelism while implementing
