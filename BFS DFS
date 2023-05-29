@@ -72,7 +72,10 @@ int main() {
 	return 0;
 }
 
-
+cd desktop
+g++ -o gfg -fopenmp df.cpp
+g++ -fopenmp dfs.cpp -o pr
+./pr
 
 
 Title of the Assignment: Design and implement Parallel Breadth First Search based on existing algorithms
